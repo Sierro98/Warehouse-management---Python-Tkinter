@@ -1,0 +1,5 @@
+Pepe Rodriguez
+1 Bote de Garbanzos 5
+2 Pasta de Dientes 5
+3 Galletas 5
+TOTAL 15
