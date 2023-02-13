@@ -13,8 +13,11 @@ def actualizarComboProveedor(event):
 def actualizarProducto(event):
     productoIndex = producto.get()
 
-def actualizarCantidad(event):
-    cantidad = cantidadProducto.current()
+def actualizarCantidadProducto(event):
+    cantidad = cantProducto.get()
+
+def actualizarPrecioProducto(event):
+    precio = precioProducto.get()
 
 def initEmitirFacturas():
     connection = sqlite3.connect('almacen.db')
@@ -43,6 +46,18 @@ def initEmitirFacturas():
     producto = tk.Entry(marco, font=('Cambria', 20))
     producto.place(x=470, y=400)
     producto.bind('<Leave>', actualizarProducto)
+
+    titCantProducto = tk.Label(marco, text='Cantidad deseada:', bg='#ffccff', font=('Cambria', 20)).place(x=470, y=490)
+    global cantProducto
+    cantProducto = tk.Spinbox(marco, font=('Cambria', 20), width=19, from_=0, to=100)
+    cantProducto.place(x=470, y=550)
+    cantProducto.bind('<Leave>', actualizarCantidadProducto)
+
+    titPrecioProducto = tk.Label(marco, text="Precio del Producto:", bg='#ffccff', font=('Cambria', 20)).place(x=470, y=620)
+    global precioProducto
+    precioProducto= tk.Spinbox(marco, font=('Cambria', 20), width=19, from_=0, to=10000)
+    precioProducto.place(x=470, y=670)
+    precioProducto.bind('<Leave>', actualizarPrecioProducto)
 
     titProveedor = tk.Label(marco, text="Seleccione al proveedor: ", bg="#ffccff", font=("Cambria", 20)).place(x=900, y=250)
     global nombreProveedor
