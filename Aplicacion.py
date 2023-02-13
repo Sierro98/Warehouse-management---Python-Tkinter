@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Created on Wed Jul 13 18:35:23 2022
-
-@author: a0b0m
+@author: Alejandro Sierro Galan
 """
 
 from tkinter import *
@@ -10,27 +8,28 @@ from tkinter import messagebox
 from PIL import Image, ImageTk
 from tkinter import Tk, Button
 
-from alta_cliente import formaltas
-from Consultas import formconsul
+from alta_cliente import aniadirCliente
+from alta_proveedor import aniadirProveedor
+from emitirFactura import initEmitirFacturas
 # from Bajas import formbajas
 # from Modifica import formmod
 
 def saludar(texto):
     print(texto)
     if texto == 'Añadir Cliente':
-        messagebox.showinfo(message=texto, title="Opción Elegida:")
-        formaltas()
+        messagebox.showinfo(message=texto, title="Elejiste:")
+        aniadirCliente()
     elif texto == 'Añadir Proveedor':
-        messagebox.showinfo(message=texto, title="Opción Elegida:")
-        formconsul()
+        messagebox.showinfo(message=texto, title="Elejiste:")
+        aniadirProveedor()
     elif texto == 'Emitir Facturas':
-        messagebox.showinfo(message=texto, title="Opción Elegida:")
-        # formmod()
+        messagebox.showinfo(message=texto, title="Elejiste:")
+        initEmitirFacturas()
     elif texto == 'Facturas Emitidas':
-        messagebox.showinfo(message=texto, title="Opción Elegida:")
+        messagebox.showinfo(message=texto, title="Elejiste:")
         # formbajas()
     elif texto == 'SALIR':
-        messagebox.showinfo(message=texto, title="Opción Elegida:")
+        messagebox.showinfo(message=texto, title="Elejiste:")
         raiz.destroy()
 
 
