@@ -52,7 +52,7 @@ def grabar():
         ciudad = "Valdemoro"
     elif ciudadIndex == 5:
         ciudad = "Alcobendas"
-    elif ciudadIndex == 5:
+    elif ciudadIndex == 6:
         ciudad = "Mostoles"
 
     try:
@@ -74,6 +74,13 @@ def grabar():
     registro = "INSERT INTO proveedores (NOMBRE, DIRECCION, CIUDAD, TELEFONO, MERCANCIAS, OBSERVACIONES)" \
                " VALUES(?, ?, ?, ?, ?, ?)"
     cursor.execute(registro, [nombre, direccion, ciudad, telefono, mercancia, observaciones])
+
+    proveedores_tree.delete(*proveedores_tree.get_children())
+    cursor.execute('SELECT NOMBRE, DIRECCION, CIUDAD, TELEFONO, MERCANCIAS, OBSERVACIONES FROM proveedores')
+    i = 0
+    for ro in cursor:
+        proveedores_tree.insert('', i, text='', values=(ro[0], ro[1], ro[2], ro[3], ro[4], ro[5]))
+        i = i + 1
     connection.commit()
     mostrar()
     continuar()
@@ -129,7 +136,7 @@ def aniadirProveedor():
                                                                                                 sticky="w", padx=30,
                                                                                                 pady=20)
     global nombreProveedor
-    nombreProveedor = tk.Entry(marco, width=100, font=("Cambria", 15))
+    nombreProveedor = tk.Entry(marco, width=50, font=("Cambria", 15))
     nombreProveedor.grid(row=4, column=1, sticky="w", padx=10, pady=10)
     nombreProveedor.bind('<Leave>', actualizarNombre)
 
@@ -137,7 +144,7 @@ def aniadirProveedor():
                                                                                                 sticky="w", padx=30,
                                                                                                 pady=20)
     global direccionProveedor
-    direccionProveedor = tk.Entry(marco, width=100, font=("Cambria", 15))
+    direccionProveedor = tk.Entry(marco, width=50, font=("Cambria", 15))
     direccionProveedor.grid(row=5, column=1, sticky="w", padx=10, pady=10)
     direccionProveedor.bind('<Leave>', actualizarDireccion)
 
@@ -169,13 +176,43 @@ def aniadirProveedor():
                                                                                              sticky="w", padx=30,
                                                                                              pady=20)
     global observacionesProveedor
-    observacionesProveedor = tk.Text(marco, width=100, height=6, font=("Cambria", 15))
+    observacionesProveedor = tk.Text(marco, width=50, height=6, font=("Cambria", 15))
     barra = tk.Scrollbar(marco)
     barra.config(command=observacionesProveedor.yview, )  # orient=VERTICAL,
     observacionesProveedor["yscrollcommand"] = barra.set
     observacionesProveedor.grid(row=9, column=1, sticky="w", padx=10, pady=10)
-    barra.grid(row=9, column=2, sticky="nsew")
+    barra.place(x=840, y=620, height=150)
     nombreProveedor.bind('<Leave>', actualizarObservaciones)
+
+    titClientes = tk.Label(marco, text="Proveedores", bg="#ffccff", font=("Cambria", 15)).grid(row=3, column=3, sticky='w')
+    global proveedores_tree
+    proveedores_tree = ttk.Treeview(marco)
+    proveedores_tree['show'] = 'headings'
+    # Definimos las columnas
+    proveedores_tree['columns'] = ('Nombre', 'Direccion', 'Ciudad', 'Telefono', 'Mercancias', 'Observaciones')
+    # Formateamos las columnas
+    proveedores_tree.column('Nombre', width=100, anchor=tk.CENTER)
+    proveedores_tree.column('Direccion', width=100, anchor=tk.CENTER)
+    proveedores_tree.column('Ciudad', width=100, anchor=tk.CENTER)
+    proveedores_tree.column('Telefono', width=100, anchor=tk.CENTER)
+    proveedores_tree.column('Mercancias', width=100, anchor=tk.CENTER)
+    proveedores_tree.column('Observaciones', width=200, anchor=tk.CENTER)
+    # Titulos de columnas
+    proveedores_tree.heading('Nombre', text='Nombre')
+    proveedores_tree.heading('Direccion', text='Direccion')
+    proveedores_tree.heading('Ciudad', text='Ciudad')
+    proveedores_tree.heading('Telefono', text='Telefono')
+    proveedores_tree.heading('Mercancias', text='Mercancias')
+    proveedores_tree.heading('Observaciones', text='Observaciones')
+    # Insert Data
+    connection = sqlite3.connect('almacen.db')
+    cursor = connection.cursor()
+    cursor.execute('SELECT NOMBRE, DIRECCION, CIUDAD, TELEFONO, MERCANCIAS, OBSERVACIONES FROM proveedores')
+    i = 0
+    for ro in cursor:
+        proveedores_tree.insert('', i, text='', values=(ro[0], ro[1], ro[2], ro[3], ro[4], ro[5]))
+        i = i + 1
+    proveedores_tree.place(x=1000, y=250, height=400)
 
     espacio6 = tk.Label(marco, text="", bg="#ffccff").grid(row=10, column=0, sticky="w", padx=10, pady=10)
     espacio7 = tk.Label(marco, text="", bg="#ffccff").grid(row=11, column=0, sticky="w", padx=10, pady=10)
