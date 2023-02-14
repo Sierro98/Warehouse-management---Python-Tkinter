@@ -223,3 +223,4 @@ def aniadirProveedor():
                       activebackground="blue", relief="raised",
                       borderwidth=5, font=("Cambria", 20), command=lambda: grabar())
     btnlgrabar.grid(row=12, column=1, sticky="w", padx=100, pady=10)
+
