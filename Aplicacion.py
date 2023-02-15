@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Created on Wed Jul 13 18:35:23 2022
-
-@author: a0b0m
+@author: Alejandro Sierro Galan
 """
 
 from tkinter import *
@@ -10,27 +8,34 @@ from tkinter import messagebox
 from PIL import Image, ImageTk
 from tkinter import Tk, Button
 
-from alta_cliente import formaltas
-from Consultas import formconsul
+from alta_cliente import aniadirCliente
+from alta_proveedor import aniadirProveedor
+from emitirFactura import initEmitirFacturas
+from introducir_producto import aniadirProducto
+
+
 # from Bajas import formbajas
 # from Modifica import formmod
 
 def saludar(texto):
     print(texto)
     if texto == 'Añadir Cliente':
-        messagebox.showinfo(message=texto, title="Opción Elegida:")
-        formaltas()
+        messagebox.showinfo(message=texto, title="Elejiste:")
+        aniadirCliente()
     elif texto == 'Añadir Proveedor':
-        messagebox.showinfo(message=texto, title="Opción Elegida:")
-        formconsul()
+        messagebox.showinfo(message=texto, title="Elejiste:")
+        aniadirProveedor()
     elif texto == 'Emitir Facturas':
-        messagebox.showinfo(message=texto, title="Opción Elegida:")
-        # formmod()
+        messagebox.showinfo(message=texto, title="Elejiste:")
+        initEmitirFacturas()
     elif texto == 'Facturas Emitidas':
-        messagebox.showinfo(message=texto, title="Opción Elegida:")
+        messagebox.showinfo(message=texto, title="Elejiste:")
         # formbajas()
+    elif texto == 'Introducir Producto':
+        messagebox.showinfo(message=texto, title="Elejiste:")
+        aniadirProducto()
     elif texto == 'SALIR':
-        messagebox.showinfo(message=texto, title="Opción Elegida:")
+        messagebox.showinfo(message=texto, title="Elejiste:")
         raiz.destroy()
 
 
@@ -46,7 +51,7 @@ marco.config(bg="#ffccff")
 marco.config(width="1920", height="1080", bd="10", relief="ridge")
 marco.pack()
 
-etiqueta = Label(marco, text='Bienvenido al almacen',bg="#ffccff", font=("Cambria 40 underline")).place(x=520, y=50)
+etiqueta = Label(marco, text='Bienvenido al almacen', bg="#ffccff", font=("Cambria 40 underline")).place(x=520, y=50)
 btnlista = []
 for n in range(len(btnsText)):
     btnlista.append(Button(marco))
@@ -59,9 +64,15 @@ for k in range(len(btnlista)):
     btnlista[k].place(x=20 + z, y=150)
     z += 300
 
+btn_aniadir_producto = Button(marco)
+btn_aniadir_producto.config(text='Introducir Producto', width=17, height=1, anchor='center', activebackground='purple',
+                            relief='raised', borderwidth=10, font=('Cambria', 20),
+                            command=lambda m='Introducir Producto': saludar(m))
+btn_aniadir_producto.place(x=320, y=230)
+
 imagen = Image.open("almacen_img.png")
 resize_imagen = imagen.resize((1000, 500))
 img = ImageTk.PhotoImage(resize_imagen)
-imagen = Label(marco, image=img, bg="blue", bd="10", relief="groove").place(x=250, y=250)
+imagen = Label(marco, image=img, bg="blue", bd="10", relief="groove").place(x=250, y=300)
 
 raiz.mainloop()
