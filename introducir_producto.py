@@ -11,6 +11,9 @@ def actualizarNombreProducto(event):
 def actualizarComboProveedor(event):
     proveedorIndex = nombreProveedor.get()
 
+def actualizarCantidad(event):
+    cantidad = cantProducto.get()
+
 def actualizarDescripcion(event):
     descripcion = descripcionProducto.get("1.0", "end-1c")
 
@@ -20,6 +23,7 @@ def grabar():
 
     proveedorIndex = nombreProveedor.current()
     nombre = nombreProducto.get()
+    cantidad = cantProducto.get()
     descripcion = descripcionProducto.get("1.0","end-1c")
     j=0
     for i in cblist:
@@ -33,21 +37,22 @@ def grabar():
                            CODIGO INTEGER PRIMARY KEY AUTOINCREMENT,
                            NOMBREPROVEEDOR VARCHAR(40) NOT NULL,
                            NOMBRE VARCHAR(100) NOT NULL,
+                           CANTIDAD INT NOT NULL,
                            DESCRIPCION TEXT NOT NULL)
                        ''')
         print("Tabla creada correctamente")
     except sqlite3.OperationalError as error:
         print("Error al abrir:", error)
 
-    registro = "INSERT INTO productos (NOMBREPROVEEDOR, NOMBRE, DESCRIPCION)" \
-               " VALUES(?, ?, ?)"
-    cursor.execute(registro, [nombreProv, nombre, descripcion])
+    registro = "INSERT INTO productos (NOMBREPROVEEDOR, NOMBRE, CANTIDAD, DESCRIPCION)" \
+               " VALUES(?, ?, ?, ?)"
+    cursor.execute(registro, [nombreProv, nombre, cantidad, descripcion])
 
     productos_tree.delete(*productos_tree.get_children())
-    cursor.execute('SELECT NOMBREPROVEEDOR, NOMBRE, DESCRIPCION FROM productos')
+    cursor.execute('SELECT NOMBREPROVEEDOR, NOMBRE, CANTIDAD, DESCRIPCION FROM productos')
     i = 0
     for ro in cursor:
-        productos_tree.insert('', i, text='', values=(ro[0], ro[1], ro[2]))
+        productos_tree.insert('', i, text='', values=(ro[0], ro[1], ro[2], ro[3]))
         i = i + 1
     connection.commit()
     mostrar()
@@ -72,6 +77,7 @@ def continuar():
         btnlgrabar['state'] = 'normal'
         nombreProducto.delete(0, 'end')
         nombreProveedor.delete(0, 'end')
+        cantProducto.delete(0, 'end')
         descripcionProducto.delete("1.0", "end-1c")
     elif dato == False:
         marco.destroy()
@@ -134,8 +140,14 @@ def aniadirProducto():
     nombreProveedor.bind('<<ComboboxSelected>>', actualizarComboProveedor)
     cursor.close()
 
+    titCantProducto = tk.Label(marco, text='Cantidad inicial:', bg='#ffccff', font=('Cambria', 20)).grid(row=6, column=0, sticky='w', pady=20)
+    global cantProducto
+    cantProducto = tk.Spinbox(marco, font=('Cambria', 20), width=19, from_=0, to=100)
+    cantProducto.grid(row=6, column=1, sticky='w')
+    cantProducto.bind('<Leave>', actualizarCantidad)
 
-    etiqueta6 = tk.Label(marco, text="Descripcion: ", bg="#ffccff", font=("Cambria", 20)).grid(row=6, column=0,
+
+    etiqueta6 = tk.Label(marco, text="Descripcion: ", bg="#ffccff", font=("Cambria", 20)).grid(row=7, column=0,
                                                                                              sticky="w", padx=30,
                                                                                              pady=20)
     global descripcionProducto
@@ -143,8 +155,8 @@ def aniadirProducto():
     barra = tk.Scrollbar(marco)
     barra.config(command=descripcionProducto.yview, )  # orient=VERTICAL,
     descripcionProducto["yscrollcommand"] = barra.set
-    descripcionProducto.grid(row=6, column=1, sticky="w", pady=10)
-    barra.grid(row=6, column=2, sticky='nsw')
+    descripcionProducto.grid(row=7, column=1, sticky="w", pady=10)
+    barra.grid(row=7, column=2, sticky='nsw')
     descripcionProducto.bind('<Leave>', actualizarDescripcion)
 
     titClientes = tk.Label(marco, text="Proveedores", bg="#ffccff", font=("Cambria", 15)).grid(row=3, column=3, sticky='w')
@@ -152,22 +164,24 @@ def aniadirProducto():
     productos_tree = ttk.Treeview(marco)
     productos_tree['show'] = 'headings'
     # Definimos las columnas
-    productos_tree['columns'] = ('NombreProducto', 'NombreProveedor', 'Descripcion')
+    productos_tree['columns'] = ('NombreProducto', 'NombreProveedor', 'Cantidad', 'Descripcion')
     # Formateamos las columnas
     productos_tree.column('NombreProducto', width=100, anchor=tk.CENTER)
     productos_tree.column('NombreProveedor', width=100, anchor=tk.CENTER)
+    productos_tree.column('Cantidad', width=100, anchor=tk.CENTER)
     productos_tree.column('Descripcion', width=200, anchor=tk.CENTER)
     # Titulos de columnas
     productos_tree.heading('NombreProducto', text='Nombre Proveedor')
     productos_tree.heading('NombreProveedor', text='Nombre Producto')
+    productos_tree.heading('Cantidad', text='Cantidad')
     productos_tree.heading('Descripcion', text='Descripcion')
     # Insert Data
     connection = sqlite3.connect('almacen.db')
     cursor = connection.cursor()
-    cursor.execute('SELECT NOMBREPROVEEDOR, NOMBRE, DESCRIPCION FROM productos')
+    cursor.execute('SELECT NOMBREPROVEEDOR, NOMBRE, CANTIDAD, DESCRIPCION FROM productos')
     i = 0
     for ro in cursor:
-        productos_tree.insert('', i, text='', values=(ro[0], ro[1], ro[2]))
+        productos_tree.insert('', i, text='', values=(ro[0], ro[1], ro[2], ro[3]))
         i = i + 1
     productos_tree.place(x=1000, y=250, height=400)
 

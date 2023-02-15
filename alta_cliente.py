@@ -2,7 +2,7 @@
 """
 Created on Fri Jul 29 18:29:24 2022
 
-@author: a0b0m
+@author: Alejandro Sierro Galan
 """
 
 import tkinter as tk
@@ -160,7 +160,7 @@ def aniadirCliente():
     barra.place(x=850, y=470, height=150)
     nombreCliente.bind('<Leave>', actualizardesc)
 
-    titClientes = tk.Label(marco, text="Clientes", bg="#ffccff", font=("Cambria", 15)).grid(row=3, column=3, sticky='w')
+    titClientes = tk.Label(marco, text="Clientes", bg="#ffccff", font=("Cambria", 15)).place(x=1150, y=200)
     global clientes_tree
     clientes_tree = ttk.Treeview(marco)
     clientes_tree['show'] = 'headings'
@@ -186,7 +186,7 @@ def aniadirCliente():
     for ro in cursor:
         clientes_tree.insert('', i, text='', values=(ro[0], ro[1], ro[2], ro[3], ro[4]))
         i = i + 1
-    clientes_tree.place(x=1000, y=250, height=400)
+    clientes_tree.place(x=900, y=250, height=400)
     espacio6 = tk.Label(marco, text="", bg="#ffccff").grid(row=10, column=0, sticky="w", padx=10, pady=10)
 
 

@@ -41,38 +41,39 @@ def initEmitirFacturas():
     nombreCliente.place(x=100, y=300)
     nombreCliente.bind('<<ComboboxSelected>>', actualizarComboCliente)
 
-    titProducto = tk.Label(marco, text="Indique el producto:", bg='#ffccff', font=('Cambria', 20)).place(x=470, y=350)
-    global producto
-    producto = tk.Entry(marco, font=('Cambria', 20))
-    producto.place(x=470, y=400)
-    producto.bind('<Leave>', actualizarProducto)
-
-    titCantProducto = tk.Label(marco, text='Cantidad deseada:', bg='#ffccff', font=('Cambria', 20)).place(x=470, y=490)
-    global cantProducto
-    cantProducto = tk.Spinbox(marco, font=('Cambria', 20), width=19, from_=0, to=100)
-    cantProducto.place(x=470, y=550)
-    cantProducto.bind('<Leave>', actualizarCantidadProducto)
-
-    titPrecioProducto = tk.Label(marco, text="Precio del Producto:", bg='#ffccff', font=('Cambria', 20)).place(x=470, y=620)
-    global precioProducto
-    precioProducto= tk.Spinbox(marco, font=('Cambria', 20), width=19, from_=0, to=10000)
-    precioProducto.place(x=470, y=670)
-    precioProducto.bind('<Leave>', actualizarPrecioProducto)
-
-    titProveedor = tk.Label(marco, text="Seleccione al proveedor: ", bg="#ffccff", font=("Cambria", 20)).place(x=900, y=250)
+    titProveedor = tk.Label(marco, text="Seleccione al proveedor: ", bg="#ffccff", font=("Cambria", 20)).place(x=100,
+                                                                                                               y=400)
     global nombreProveedor
     nombreProveedor = ttk.Combobox(marco, font=("Cambria", 15))
     cblist = list()
     for row in cursor.execute('SELECT NOMBRE FROM proveedores'):
         cblist.append(row)
     nombreProveedor['values'] = (cblist)
-    nombreProveedor.place(x=900, y=300)
+    nombreProveedor.place(x=100, y=450)
     nombreProveedor.bind('<<ComboboxSelected>>', actualizarComboProveedor)
+
+    titProducto = tk.Label(marco, text="Indique el producto:", bg='#ffccff', font=('Cambria', 20)).place(x=470, y=250)
+    global producto
+    producto = tk.Entry(marco, font=('Cambria', 20))
+    producto.place(x=470, y=300)
+    producto.bind('<Leave>', actualizarProducto)
+
+    titCantProducto = tk.Label(marco, text='Cantidad deseada:', bg='#ffccff', font=('Cambria', 20)).place(x=470, y=390)
+    global cantProducto
+    cantProducto = tk.Spinbox(marco, font=('Cambria', 20), width=19, from_=0, to=100)
+    cantProducto.place(x=470, y=450)
+    cantProducto.bind('<Leave>', actualizarCantidadProducto)
+
+    titPrecioProducto = tk.Label(marco, text="Precio del Producto:", bg='#ffccff', font=('Cambria', 20)).place(x=470, y=520)
+    global precioProducto
+    precioProducto= tk.Spinbox(marco, font=('Cambria', 20), width=19, from_=0, to=10000)
+    precioProducto.place(x=470, y=570)
+    precioProducto.bind('<Leave>', actualizarPrecioProducto)
 
     global btnlgrabar
     btnlgrabar = Button(marco)
     btnlgrabar.config(text="EMITIR", width=10, height=1, anchor="center",
                       activebackground="blue", relief="raised",
                       borderwidth=5, font=("Cambria", 20), command=lambda: grabar())
-    btnlgrabar.place(x=530, y=800)
+    btnlgrabar.place(x=530, y=680)
 

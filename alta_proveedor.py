@@ -129,50 +129,48 @@ def aniadirProveedor():
                                                                                                          padx=450,
                                                                                                          pady=30)
 
-    espacio1 = tk.Label(marco, text="", bg="#ffccff").grid(row=1, column=1, sticky="w", padx=10, pady=10)
-    espacio2 = tk.Label(marco, text="", bg="#ffccff").grid(row=2, column=1, sticky="w", padx=10, pady=10)
 
-    etiqueta2 = tk.Label(marco, text="Nombre: ", bg="#ffccff", font=("Cambria", 20)).grid(row=4, column=0,
+    etiqueta2 = tk.Label(marco, text="Nombre: ", bg="#ffccff", font=("Cambria", 20)).grid(row=1, column=0,
                                                                                                 sticky="w", padx=30,
                                                                                                 pady=20)
     global nombreProveedor
     nombreProveedor = tk.Entry(marco, width=50, font=("Cambria", 15))
-    nombreProveedor.grid(row=4, column=1, sticky="w", padx=10, pady=10)
+    nombreProveedor.grid(row=1, column=1, sticky="w", padx=10, pady=10)
     nombreProveedor.bind('<Leave>', actualizarNombre)
 
-    etiqueta3 = tk.Label(marco, text="Direccion: ", bg="#ffccff", font=("Cambria", 20)).grid(row=5, column=0,
+    etiqueta3 = tk.Label(marco, text="Direccion: ", bg="#ffccff", font=("Cambria", 20)).grid(row=2, column=0,
                                                                                                 sticky="w", padx=30,
                                                                                                 pady=20)
     global direccionProveedor
     direccionProveedor = tk.Entry(marco, width=50, font=("Cambria", 15))
-    direccionProveedor.grid(row=5, column=1, sticky="w", padx=10, pady=10)
+    direccionProveedor.grid(row=2, column=1, sticky="w", padx=10, pady=10)
     direccionProveedor.bind('<Leave>', actualizarDireccion)
 
-    etiqueta4 = tk.Label(marco, text="Ciudad: ", bg="#ffccff", font=("Cambria", 20)).grid(row=6, column=0, sticky="w",
+    etiqueta4 = tk.Label(marco, text="Ciudad: ", bg="#ffccff", font=("Cambria", 20)).grid(row=3, column=0, sticky="w",
                                                                                         padx=30, pady=20)
     global ciudadProveedor
     ciudadProveedor = ttk.Combobox(marco, font=("Cambria", 15))
     ciudadProveedor['values'] = ("Madrid", "Alcala de Henares", 'Villalba', 'Galapagar', 'Valdemoro', 'Alcobendas', 'Mostoles')
-    ciudadProveedor.grid(row=6, column=1, sticky="w", padx=10, pady=10)
+    ciudadProveedor.grid(row=3, column=1, sticky="w", padx=10, pady=10)
     ciudadProveedor.bind('<<ComboboxSelected>>', actualizarCiudad)
 
-    etiqueta5 = tk.Label(marco, text="Telefono: ", bg="#ffccff", font=("Cambria", 20)).grid(row=7, column=0,
+    etiqueta5 = tk.Label(marco, text="Telefono: ", bg="#ffccff", font=("Cambria", 20)).grid(row=4, column=0,
                                                                                                       sticky="w",
                                                                                                       padx=30, pady=20)
     global telefonoProveedor
     telefonoProveedor = tk.Entry(marco, width=50, font=("Cambria", 15))
-    telefonoProveedor.grid(row=7, column=1, sticky="w", padx=10, pady=10)
+    telefonoProveedor.grid(row=4, column=1, sticky="w", padx=10, pady=10)
     telefonoProveedor.bind('<Leave>', actualizarTelefono)
 
-    etiqueta4 = tk.Label(marco, text="Mercancias: ", bg="#ffccff", font=("Cambria", 20)).grid(row=8, column=0, sticky="w",
+    etiqueta4 = tk.Label(marco, text="Mercancias: ", bg="#ffccff", font=("Cambria", 20)).grid(row=5, column=0, sticky="w",
                                                                                           padx=30, pady=20)
     global mercanciasProveedor
     mercanciasProveedor = ttk.Combobox(marco, font=("Cambria", 15))
     mercanciasProveedor['values'] = ('Hardware', 'Software')
-    mercanciasProveedor.grid(row=8, column=1, sticky="w", padx=10, pady=10)
+    mercanciasProveedor.grid(row=5, column=1, sticky="w", padx=10, pady=10)
     mercanciasProveedor.bind('<<ComboboxSelected>>', actualizarcomboMercancias)
 
-    etiqueta6 = tk.Label(marco, text="Observaciones: ", bg="#ffccff", font=("Cambria", 20)).grid(row=9, column=0,
+    etiqueta6 = tk.Label(marco, text="Observaciones: ", bg="#ffccff", font=("Cambria", 20)).grid(row=6, column=0,
                                                                                              sticky="w", padx=30,
                                                                                              pady=20)
     global observacionesProveedor
@@ -180,11 +178,11 @@ def aniadirProveedor():
     barra = tk.Scrollbar(marco)
     barra.config(command=observacionesProveedor.yview, )  # orient=VERTICAL,
     observacionesProveedor["yscrollcommand"] = barra.set
-    observacionesProveedor.grid(row=9, column=1, sticky="w", padx=10, pady=10)
-    barra.place(x=840, y=620, height=150)
+    observacionesProveedor.grid(row=6, column=1, sticky="w", padx=10, pady=10)
+    barra.place(x=800, y=510, height=150)
     nombreProveedor.bind('<Leave>', actualizarObservaciones)
 
-    titClientes = tk.Label(marco, text="Proveedores", bg="#ffccff", font=("Cambria", 15)).grid(row=3, column=3, sticky='w')
+    titClientes = tk.Label(marco, text="Proveedores", bg="#ffccff", font=("Cambria", 15)).place(x=1100, y=200)
     global proveedores_tree
     proveedores_tree = ttk.Treeview(marco)
     proveedores_tree['show'] = 'headings'
@@ -212,7 +210,7 @@ def aniadirProveedor():
     for ro in cursor:
         proveedores_tree.insert('', i, text='', values=(ro[0], ro[1], ro[2], ro[3], ro[4], ro[5]))
         i = i + 1
-    proveedores_tree.place(x=1000, y=250, height=400)
+    proveedores_tree.place(x=820, y=250, height=400)
 
     espacio6 = tk.Label(marco, text="", bg="#ffccff").grid(row=10, column=0, sticky="w", padx=10, pady=10)
     espacio7 = tk.Label(marco, text="", bg="#ffccff").grid(row=11, column=0, sticky="w", padx=10, pady=10)
@@ -222,5 +220,5 @@ def aniadirProveedor():
     btnlgrabar.config(text="GRABAR", width=10, height=2, anchor="center",
                       activebackground="blue", relief="raised",
                       borderwidth=5, font=("Cambria", 20), command=lambda: grabar())
-    btnlgrabar.grid(row=12, column=1, sticky="w", padx=100, pady=10)
+    btnlgrabar.grid(row=8, column=1, sticky="w", padx=100, pady=10)
 

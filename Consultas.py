@@ -2,7 +2,7 @@
 """
 Created on Fri Jul 29 18:29:24 2022
 
-@author: a0b0m
+@author: Alejandro Sierro Galan
 """
 
 from tkinter import Tk, Button

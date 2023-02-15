@@ -2,7 +2,7 @@
 """
 Created on Sat Feb  4 18:27:51 2023
 
-@author: a0b0m
+@author: Alejandro Sierro Galan
 """
 # conda install -c anaconda reportlab
 
