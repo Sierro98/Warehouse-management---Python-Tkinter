@@ -159,7 +159,7 @@ def aniadirProducto():
     barra.grid(row=7, column=2, sticky='nsw')
     descripcionProducto.bind('<Leave>', actualizarDescripcion)
 
-    titClientes = tk.Label(marco, text="Proveedores", bg="#ffccff", font=("Cambria", 15)).grid(row=3, column=3, sticky='w')
+    titClientes = tk.Label(marco, text="Productos", bg="#ffccff", font=("Cambria", 15)).place(x=1200, y=200)
     global productos_tree
     productos_tree = ttk.Treeview(marco)
     productos_tree['show'] = 'headings'
