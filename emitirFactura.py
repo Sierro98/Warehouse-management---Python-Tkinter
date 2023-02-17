@@ -3,6 +3,7 @@ import tkinter as tk
 from tkinter import ttk
 from tkinter.messagebox import *
 from tkinter import Tk, Button
+from creafac import ejecutar
 
 def actualizarComboCliente(event):
     clienteIndex = nombreCliente.current()
@@ -67,6 +68,14 @@ def grabar():
     for ro in cursor:
         productos_tree.insert('', i, text='', values=(ro[0], ro[1], ro[2], ro[3]))
         i = i + 1
+
+    codigoquery = 'SELECT CODIGO FROM facturas WHERE NOMBRE = ?'
+    cursor.execute(codigoquery, [nombreProd])
+    cod = cursor.fetchall()[0]
+    f = open("Factura.txt", 'w')
+    f.write(f'{nombreClient}\n{cod[0]} {nombreProd} {cantidad} {precio}\u20ac')
+    f.close()
+    ejecutar()
 
     connection.commit()
     mostrar()
