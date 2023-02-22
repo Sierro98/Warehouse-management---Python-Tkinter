@@ -12,6 +12,7 @@ from alta_cliente import aniadirCliente
 from alta_proveedor import aniadirProveedor
 from emitirFactura import initEmitirFacturas
 from introducir_producto import aniadirProducto
+from facturas_emitidas import  initFacturasEmitidas
 
 
 # from Bajas import formbajas
@@ -28,9 +29,9 @@ def saludar(texto):
     elif texto == 'Emitir Facturas':
         messagebox.showinfo(message=texto, title="Elejiste:")
         initEmitirFacturas()
-    elif texto == 'Facturas Emitidas':
+    elif texto == 'Facturas emitidas':
         messagebox.showinfo(message=texto, title="Elejiste:")
-        # formbajas()
+        initFacturasEmitidas()
     elif texto == 'Introducir Producto':
         messagebox.showinfo(message=texto, title="Elejiste:")
         aniadirProducto()
