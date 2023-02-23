@@ -11,6 +11,77 @@ import sqlite3
 from tkinter.messagebox import *
 from tkinter import Tk, Button
 
+def actualizarTabla():
+    connection = sqlite3.connect('almacen.db')
+    cursor = connection.cursor()
+
+    clientes_tree.delete(*clientes_tree.get_children())
+    cursor.execute('SELECT CODIGO, NOMBRE, CIUDAD, TELEFONO, DESCRIPCION FROM clientes')
+    i = 0
+    for ro in cursor:
+        clientes_tree.insert('', i, text='', values=(ro[0], ro[1], ro[2], ro[3], ro[4]))
+        i = i + 1
+
+    cursor.close()
+    connection.close()
+
+def onSelected(event):
+    limpiarCampos()
+    for selItem in clientes_tree.selection():
+        item = clientes_tree.item(selItem)
+        codigo, nombre, ciu, telef, des = item["values"][0:5]
+        global codigoSelected
+        codigoSelected = int(codigo)
+        nombreCliente.insert(0, nombre)
+        telefono.insert(0, telef)
+        descripcion.insert("1.0", des)
+
+def limpiarCampos():
+    nombreCliente.delete(0, 'end')
+    telefono.delete(0, 'end')
+    descripcion.delete("1.0", "end-1c")
+    ciudad.delete(0, 'end')
+
+def modificar():
+    connection = sqlite3.connect('almacen.db')
+    cursor = connection.cursor()
+
+    nombre = nombreCliente.get()
+    telefonoCliente = telefono.get()
+    descrip = descripcion.get("1.0", "end-1c")
+    index = ciudad.current()
+    if index == 0:
+        ciudadCliente = "Madrid"
+    elif index == 1:
+        ciudadCliente = "Alcala de Henares"
+    elif index == 2:
+        ciudadCliente = "Villalba"
+    elif index == 3:
+        ciudadCliente = "Galapagar"
+    elif index == 4:
+        ciudadCliente = "Valdemoro"
+    elif index == 5:
+        ciudadCliente = "Alcobendas"
+    elif index == 6:
+        ciudadCliente = "Mostoles"
+
+    update = 'UPDATE clientes SET NOMBRE = ?, CIUDAD = ?, TELEFONO = ?, DESCRIPCION = ? WHERE CODIGO = ?'
+
+    cursor.execute(update, [nombre, ciudadCliente, telefonoCliente, descrip, codigoSelected])
+    connection.commit()
+    actualizarTabla()
+    cursor.close()
+    connection.close()
+def borrar():
+    connection = sqlite3.connect('almacen.db')
+    cursor = connection.cursor()
+
+    borrar = 'DELETE FROM clientes WHERE CODIGO = ?'
+    cursor.execute(borrar, [codigoSelected])
+    connection.commit()
+    actualizarTabla()
+    cursor.close()
+    connection.close()
 
 def actualizarcombo(event):
     index = ciudad.current()
@@ -98,10 +169,7 @@ def continuar():
     dato = tk.messagebox.askyesno(message="¿Desea continuar?", title="Título", parent=marco)
     if dato == True:
         btnlgrabar['state'] = 'normal'
-        nombreCliente.delete(0, 'end')
-        telefono.delete(0, 'end')
-        descripcion.delete("1.0", "end-1c")
-        ciudad.delete(0, 'end')
+        limpiarCampos()
     elif dato == False:
         marco.destroy()
 
@@ -167,9 +235,9 @@ def aniadirCliente():
     #Definimos las columnas
     clientes_tree['columns'] = ('Codigo', 'Nombre', 'Ciudad', 'Telefono', 'Descripcion')
     #Formateamos las columnas
-    clientes_tree.column('Codigo', width=100, anchor=tk.CENTER)
+    clientes_tree.column('Codigo', width=50, anchor=tk.CENTER)
     clientes_tree.column('Nombre', width=100, anchor=tk.CENTER)
-    clientes_tree.column('Ciudad', width=100, anchor=tk.CENTER)
+    clientes_tree.column('Ciudad', width=150, anchor=tk.CENTER)
     clientes_tree.column('Telefono', width=100, anchor=tk.CENTER)
     clientes_tree.column('Descripcion', width=200, anchor=tk.CENTER)
     #Titulos de columnas
@@ -186,6 +254,7 @@ def aniadirCliente():
     for ro in cursor:
         clientes_tree.insert('', i, text='', values=(ro[0], ro[1], ro[2], ro[3], ro[4]))
         i = i + 1
+    clientes_tree.bind("<<TreeviewSelect>>", onSelected)
     clientes_tree.place(x=900, y=250, height=400)
     espacio6 = tk.Label(marco, text="", bg="#ffccff").grid(row=10, column=0, sticky="w", padx=10, pady=10)
 
@@ -196,3 +265,17 @@ def aniadirCliente():
                       activebackground="blue", relief="raised",
                       borderwidth=5, font=("Cambria", 20), command=lambda: grabar())
     btnlgrabar.grid(row=10, column=1, sticky="w", padx=100, pady=10)
+
+    global btnModificar
+    btnlgrabar = Button(marco)
+    btnlgrabar.config(text="MODIFICAR", width=10, height=2, anchor="center",
+                      activebackground="blue", relief="raised",
+                      borderwidth=5, font=("Cambria", 20), command=lambda: modificar())
+    btnlgrabar.place(x=200, y=600)
+
+    global btnBorrar
+    btnlgrabar = Button(marco)
+    btnlgrabar.config(text="BORRAR", width=10, height=2, anchor="center",
+                      activebackground="blue", relief="raised",
+                      borderwidth=5, font=("Cambria", 20), command=lambda: borrar())
+    btnlgrabar.place(x=590, y=600)

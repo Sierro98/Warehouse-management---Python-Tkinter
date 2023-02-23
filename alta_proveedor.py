@@ -4,6 +4,90 @@ from tkinter import ttk
 from tkinter.messagebox import *
 from tkinter import Tk, Button
 
+def actualizarTabla():
+    connection = sqlite3.connect('almacen.db')
+    cursor = connection.cursor()
+
+    proveedores_tree.delete(*proveedores_tree.get_children())
+    cursor.execute('SELECT CODIGO, NOMBRE, DIRECCION, CIUDAD, TELEFONO, MERCANCIAS, OBSERVACIONES FROM proveedores')
+    i = 0
+    for ro in cursor:
+        proveedores_tree.insert('', i, text='', values=(ro[0], ro[1], ro[2], ro[3], ro[4], ro[5], ro[6]))
+        i = i + 1
+
+    cursor.close()
+    connection.close()
+
+def onSelected(event):
+    limpiarCampos()
+    for selItem in proveedores_tree.selection():
+        item = proveedores_tree.item(selItem)
+        cod, nom, dir, ciu, tel, merc, obs = item["values"][0:7]
+        global codigoSelected
+        codigoSelected = int(cod)
+        nombreProveedor.insert(0, nom)
+        direccionProveedor.insert(0, dir)
+        telefonoProveedor.insert(0, tel)
+        observacionesProveedor.insert("1.0", obs)
+
+
+def limpiarCampos():
+    nombreProveedor.delete(0, 'end')
+    direccionProveedor.delete(0, 'end')
+    observacionesProveedor.delete("1.0", "end-1c")
+    telefonoProveedor.delete(0, 'end')
+
+def modificar():
+    connection = sqlite3.connect('almacen.db')
+    cursor = connection.cursor()
+
+    nombre = nombreProveedor.get()
+    direccion = direccionProveedor.get()
+    telefono = telefonoProveedor.get()
+    mercanciaIndex = mercanciasProveedor.current()
+    ciudadIndex = ciudadProveedor.current()
+    observaciones = observacionesProveedor.get("1.0", "end-1c")
+
+    if mercanciaIndex == 0:
+        mercancia = 'Hardware'
+    elif mercanciaIndex == 1:
+        mercancia = 'Software'
+
+    if ciudadIndex == 0:
+        ciudad = "Madrid"
+    elif ciudadIndex == 1:
+        ciudad = "Alcala de Henares"
+    elif ciudadIndex == 2:
+        ciudad = "Villalba"
+    elif ciudadIndex == 3:
+        ciudad = "Galapagar"
+    elif ciudadIndex == 4:
+        ciudad = "Valdemoro"
+    elif ciudadIndex == 5:
+        ciudad = "Alcobendas"
+    elif ciudadIndex == 6:
+        ciudad = "Mostoles"
+
+    update = 'UPDATE proveedores SET NOMBRE = ?, DIRECCION = ?, CIUDAD = ?, TELEFONO = ?, MERCANCIAS = ?, OBSERVACIONES = ? ' \
+             'WHERE CODIGO = ?'
+
+    cursor.execute(update, [nombre, direccion, ciudad, telefono, mercancia, observaciones, codigoSelected])
+    connection.commit()
+    actualizarTabla()
+    cursor.close()
+    connection.close()
+def borrar():
+    connection = sqlite3.connect('almacen.db')
+    cursor = connection.cursor()
+
+    borrar = 'DELETE FROM proveedores WHERE CODIGO = ?'
+    cursor.execute(borrar, [codigoSelected])
+    connection.commit()
+    actualizarTabla()
+    cursor.close()
+    connection.close()
+
+
 
 def actualizarcomboMercancias(event):
     mercanciaIndex = mercanciasProveedor.current()
@@ -76,10 +160,10 @@ def grabar():
     cursor.execute(registro, [nombre, direccion, ciudad, telefono, mercancia, observaciones])
 
     proveedores_tree.delete(*proveedores_tree.get_children())
-    cursor.execute('SELECT NOMBRE, DIRECCION, CIUDAD, TELEFONO, MERCANCIAS, OBSERVACIONES FROM proveedores')
+    cursor.execute('SELECT CODIGO, NOMBRE, DIRECCION, CIUDAD, TELEFONO, MERCANCIAS, OBSERVACIONES FROM proveedores')
     i = 0
     for ro in cursor:
-        proveedores_tree.insert('', i, text='', values=(ro[0], ro[1], ro[2], ro[3], ro[4], ro[5]))
+        proveedores_tree.insert('', i, text='', values=(ro[0], ro[1], ro[2], ro[3], ro[4], ro[5], ro[6]))
         i = i + 1
     connection.commit()
     mostrar()
@@ -187,8 +271,9 @@ def aniadirProveedor():
     proveedores_tree = ttk.Treeview(marco)
     proveedores_tree['show'] = 'headings'
     # Definimos las columnas
-    proveedores_tree['columns'] = ('Nombre', 'Direccion', 'Ciudad', 'Telefono', 'Mercancias', 'Observaciones')
+    proveedores_tree['columns'] = ('Codigo', 'Nombre', 'Direccion', 'Ciudad', 'Telefono', 'Mercancias', 'Observaciones')
     # Formateamos las columnas
+    proveedores_tree.column('Codigo', width=50, anchor=tk.CENTER)
     proveedores_tree.column('Nombre', width=100, anchor=tk.CENTER)
     proveedores_tree.column('Direccion', width=100, anchor=tk.CENTER)
     proveedores_tree.column('Ciudad', width=100, anchor=tk.CENTER)
@@ -196,6 +281,7 @@ def aniadirProveedor():
     proveedores_tree.column('Mercancias', width=100, anchor=tk.CENTER)
     proveedores_tree.column('Observaciones', width=200, anchor=tk.CENTER)
     # Titulos de columnas
+    proveedores_tree.heading('Codigo', text='Codigo')
     proveedores_tree.heading('Nombre', text='Nombre')
     proveedores_tree.heading('Direccion', text='Direccion')
     proveedores_tree.heading('Ciudad', text='Ciudad')
@@ -205,11 +291,12 @@ def aniadirProveedor():
     # Insert Data
     connection = sqlite3.connect('almacen.db')
     cursor = connection.cursor()
-    cursor.execute('SELECT NOMBRE, DIRECCION, CIUDAD, TELEFONO, MERCANCIAS, OBSERVACIONES FROM proveedores')
+    cursor.execute('SELECT CODIGO, NOMBRE, DIRECCION, CIUDAD, TELEFONO, MERCANCIAS, OBSERVACIONES FROM proveedores')
     i = 0
     for ro in cursor:
-        proveedores_tree.insert('', i, text='', values=(ro[0], ro[1], ro[2], ro[3], ro[4], ro[5]))
+        proveedores_tree.insert('', i, text='', values=(ro[0], ro[1], ro[2], ro[3], ro[4], ro[5], ro[6]))
         i = i + 1
+    proveedores_tree.bind("<<TreeviewSelect>>", onSelected)
     proveedores_tree.place(x=820, y=250, height=400)
 
     espacio6 = tk.Label(marco, text="", bg="#ffccff").grid(row=10, column=0, sticky="w", padx=10, pady=10)
@@ -221,4 +308,18 @@ def aniadirProveedor():
                       activebackground="blue", relief="raised",
                       borderwidth=5, font=("Cambria", 20), command=lambda: grabar())
     btnlgrabar.grid(row=8, column=1, sticky="w", padx=100, pady=10)
+
+    global btnModificar
+    btnlgrabar = Button(marco)
+    btnlgrabar.config(text="MODIFICAR", width=10, height=2, anchor="center",
+                      activebackground="blue", relief="raised",
+                      borderwidth=5, font=("Cambria", 20), command=lambda: modificar())
+    btnlgrabar.place(x=160, y=675)
+
+    global btnBorrar
+    btnlgrabar = Button(marco)
+    btnlgrabar.config(text="BORRAR", width=10, height=2, anchor="center",
+                      activebackground="blue", relief="raised",
+                      borderwidth=5, font=("Cambria", 20), command=lambda: borrar())
+    btnlgrabar.place(x=540, y=675)
 
