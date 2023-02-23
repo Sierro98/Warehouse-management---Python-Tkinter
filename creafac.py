@@ -27,7 +27,7 @@ def leerf(f):
             lista.append(linea)
             
 
-def ejecutar():
+def ejecutar(idFactura):
     global lista
     lista = []
     z = 0
@@ -38,7 +38,7 @@ def ejecutar():
     entrecols = 15
 
     global c
-    c = canvas.Canvas("Factura.pdf")
+    c = canvas.Canvas(f'Factura{idFactura}.pdf')
 
     pintarlogo()
     pintarcabecera()

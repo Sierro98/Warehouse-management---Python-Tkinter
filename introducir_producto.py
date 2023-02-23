@@ -5,6 +5,71 @@ from tkinter.messagebox import *
 from tkinter import Tk, Button
 
 
+def actualizarTabla():
+    connection = sqlite3.connect('almacen.db')
+    cursor = connection.cursor()
+    productos_tree.delete(*productos_tree.get_children())
+    cursor.execute('SELECT CODIGO, NOMBREPROVEEDOR, NOMBRE, CANTIDAD, DESCRIPCION FROM productos')
+    i = 0
+    for ro in cursor:
+        productos_tree.insert('', i, text='', values=(ro[0], ro[1], ro[2], ro[3], ro[4]))
+        i = i + 1
+
+    cursor.close()
+    connection.close()
+
+def onSelected(event):
+    limpiarCampos()
+    for selItem in productos_tree.selection():
+        item = productos_tree.item(selItem)
+        cod, nomProv, nom, cant, desc = item["values"][0:5]
+        global codigoSelected
+        codigoSelected = int(cod)
+        nombreProducto.insert(0, nom)
+        cantProducto.insert(0, cant)
+        descripcionProducto.insert("1.0", desc)
+
+def limpiarCampos():
+    nombreProveedor.delete(0, 'end')
+    nombreProducto.delete(0, 'end')
+    descripcionProducto.delete("1.0", "end-1c")
+    cantProducto.delete(0, 'end')
+
+def modificar():
+    connection = sqlite3.connect('almacen.db')
+    cursor = connection.cursor()
+
+    proveedorIndex = nombreProveedor.current()
+    nombre = nombreProducto.get()
+    cantidad = cantProducto.get()
+    descripcion = descripcionProducto.get("1.0", "end-1c")
+    j = 0
+    for i in cblist:
+        if proveedorIndex == j:
+            nombreProv = cblist[j][0]
+        j = j + 1
+
+    update = 'UPDATE productos SET NOMBREPROVEEDOR = ?, NOMBRE = ?, CANTIDAD = ?, DESCRIPCION = ? ' \
+             'WHERE CODIGO = ?'
+
+    cursor.execute(update, [nombreProv, nombre, cantidad, descripcion, codigoSelected])
+    connection.commit()
+    actualizarTabla()
+    cursor.close()
+    connection.close()
+def borrar():
+    connection = sqlite3.connect('almacen.db')
+    cursor = connection.cursor()
+
+    borrar = 'DELETE FROM productos WHERE CODIGO = ?'
+    cursor.execute(borrar, [codigoSelected])
+    connection.commit()
+    actualizarTabla()
+    cursor.close()
+    connection.close()
+
+
+
 def actualizarNombreProducto(event):
     nombreProd = nombreProducto.get()
 
@@ -48,13 +113,8 @@ def grabar():
                " VALUES(?, ?, ?, ?)"
     cursor.execute(registro, [nombreProv, nombre, cantidad, descripcion])
 
-    productos_tree.delete(*productos_tree.get_children())
-    cursor.execute('SELECT NOMBREPROVEEDOR, NOMBRE, CANTIDAD, DESCRIPCION FROM productos')
-    i = 0
-    for ro in cursor:
-        productos_tree.insert('', i, text='', values=(ro[0], ro[1], ro[2], ro[3]))
-        i = i + 1
     connection.commit()
+    actualizarTabla()
     mostrar()
     continuar()
 
@@ -164,26 +224,23 @@ def aniadirProducto():
     productos_tree = ttk.Treeview(marco)
     productos_tree['show'] = 'headings'
     # Definimos las columnas
-    productos_tree['columns'] = ('NombreProducto', 'NombreProveedor', 'Cantidad', 'Descripcion')
+    productos_tree['columns'] = ('Codigo', 'NombreProducto', 'NombreProveedor', 'Cantidad', 'Descripcion')
     # Formateamos las columnas
+    productos_tree.column('Codigo', width=50, anchor=tk.CENTER)
     productos_tree.column('NombreProducto', width=100, anchor=tk.CENTER)
     productos_tree.column('NombreProveedor', width=100, anchor=tk.CENTER)
     productos_tree.column('Cantidad', width=100, anchor=tk.CENTER)
     productos_tree.column('Descripcion', width=200, anchor=tk.CENTER)
     # Titulos de columnas
+    productos_tree.heading("Codigo", text="Codigo")
     productos_tree.heading('NombreProducto', text='Nombre Proveedor')
     productos_tree.heading('NombreProveedor', text='Nombre Producto')
     productos_tree.heading('Cantidad', text='Cantidad')
     productos_tree.heading('Descripcion', text='Descripcion')
     # Insert Data
-    connection = sqlite3.connect('almacen.db')
-    cursor = connection.cursor()
-    cursor.execute('SELECT NOMBREPROVEEDOR, NOMBRE, CANTIDAD, DESCRIPCION FROM productos')
-    i = 0
-    for ro in cursor:
-        productos_tree.insert('', i, text='', values=(ro[0], ro[1], ro[2], ro[3]))
-        i = i + 1
-    productos_tree.place(x=1000, y=250, height=400)
+    actualizarTabla()
+    productos_tree.bind("<<TreeviewSelect>>", onSelected)
+    productos_tree.place(x=900, y=250, height=400)
 
     espacio6 = tk.Label(marco, text="", bg="#ffccff").grid(row=10, column=0, sticky="w", padx=10, pady=10)
     espacio7 = tk.Label(marco, text="", bg="#ffccff").grid(row=11, column=0, sticky="w", padx=10, pady=10)
@@ -194,3 +251,17 @@ def aniadirProducto():
                       activebackground="blue", relief="raised",
                       borderwidth=5, font=("Cambria", 20), command=lambda: grabar())
     btnlgrabar.grid(row=8, column=1, sticky="w", padx=100, pady=10)
+
+    global btnModificar
+    btnlgrabar = Button(marco)
+    btnlgrabar.config(text="MODIFICAR", width=10, height=2, anchor="center",
+                      activebackground="blue", relief="raised",
+                      borderwidth=5, font=("Cambria", 20), command=lambda: modificar())
+    btnlgrabar.place(x=160, y=675)
+
+    global btnBorrar
+    btnlgrabar = Button(marco)
+    btnlgrabar.config(text="BORRAR", width=10, height=2, anchor="center",
+                      activebackground="blue", relief="raised",
+                      borderwidth=5, font=("Cambria", 20), command=lambda: borrar())
+    btnlgrabar.place(x=540, y=675)

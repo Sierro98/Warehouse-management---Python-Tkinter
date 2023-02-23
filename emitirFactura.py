@@ -75,7 +75,7 @@ def grabar():
     f = open("Factura.txt", 'w')
     f.write(f'{nombreClient}\n{cod[0]} {nombreProd} {cantidad} {precio}\u20ac')
     f.close()
-    ejecutar()
+    ejecutar(cod[0])
 
     connection.commit()
     mostrar()
