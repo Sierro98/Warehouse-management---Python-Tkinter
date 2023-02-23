@@ -175,6 +175,26 @@ def continuar():
 
 
 def aniadirCliente():
+    connection = sqlite3.connect('almacen.db')
+    cursor = connection.cursor()
+    try:
+        cursor.execute('''
+                        CREATE TABLE IF NOT EXISTS clientes (
+                            CODIGO INTEGER PRIMARY KEY AUTOINCREMENT,
+                            NOMBRE VARCHAR(40) NOT NULL,
+                            CIUDAD VARCHAR(40) NOT NULL,
+                            TELEFONO INT NOT NULL,
+                            DESCRIPCION TEXT NOT NULL)
+
+                        ''')
+        print("Tabla creada correctamente")
+    except sqlite3.OperationalError as error:
+        print("Error al abrir:", error)
+
+    connection.commit()
+    cursor.close()
+    connection.close()
+
     global marco
     marco = tk.Tk()
     marco.title("Añadir Cliente")

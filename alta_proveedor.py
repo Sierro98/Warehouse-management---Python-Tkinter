@@ -199,6 +199,27 @@ def continuar():
 
 
 def aniadirProveedor():
+    connection = sqlite3.connect('almacen.db')
+    cursor = connection.cursor()
+    try:
+        cursor.execute('''
+                          CREATE TABLE IF NOT EXISTS proveedores (
+                              CODIGO INTEGER PRIMARY KEY AUTOINCREMENT,
+                              NOMBRE VARCHAR(40) NOT NULL,
+                              DIRECCION VARCHAR(100) NOT NULL,
+                              CIUDAD VARCHAR(40) NOT NULL,
+                              TELEFONO INT NOT NULL,
+                              MERCANCIAS VARCHAR(50) NOT NULL,
+                              OBSERVACIONES TEXT NOT NULL)
+
+                          ''')
+        print("Tabla creada correctamente")
+    except sqlite3.OperationalError as error:
+        print("Error al abrir:", error)
+
+    connection.commit()
+    cursor.close()
+    connection.close()
     global marco
     marco = tk.Tk()
     marco.title("Añadir Proveedor")
@@ -279,7 +300,7 @@ def aniadirProveedor():
     proveedores_tree.column('Ciudad', width=100, anchor=tk.CENTER)
     proveedores_tree.column('Telefono', width=100, anchor=tk.CENTER)
     proveedores_tree.column('Mercancias', width=100, anchor=tk.CENTER)
-    proveedores_tree.column('Observaciones', width=200, anchor=tk.CENTER)
+    proveedores_tree.column('Observaciones', width=150, anchor=tk.CENTER)
     # Titulos de columnas
     proveedores_tree.heading('Codigo', text='Codigo')
     proveedores_tree.heading('Nombre', text='Nombre')
