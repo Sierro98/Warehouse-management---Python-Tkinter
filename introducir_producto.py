@@ -5,6 +5,7 @@ from tkinter.messagebox import *
 from tkinter import Tk, Button
 
 
+
 def actualizarTabla():
     connection = sqlite3.connect('almacen.db')
     cursor = connection.cursor()
@@ -40,15 +41,10 @@ def modificar():
     connection = sqlite3.connect('almacen.db')
     cursor = connection.cursor()
 
-    proveedorIndex = nombreProveedor.current()
+    nombreProv = nombreProveedor.get()
     nombre = nombreProducto.get()
     cantidad = cantProducto.get()
     descripcion = descripcionProducto.get("1.0", "end-1c")
-    j = 0
-    for i in cblist:
-        if proveedorIndex == j:
-            nombreProv = cblist[j][0]
-        j = j + 1
 
     update = 'UPDATE productos SET NOMBREPROVEEDOR = ?, NOMBRE = ?, CANTIDAD = ?, DESCRIPCION = ? ' \
              'WHERE CODIGO = ?'

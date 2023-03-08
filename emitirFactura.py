@@ -55,7 +55,7 @@ def grabar():
     cant = cursor.fetchall()[0]
     cantidadActual: int = cant[0] - int(cantidad)
 
-    if cant[0] < cantidadActual:
+    if cant[0] < int(cantidad):
         dato = tk.messagebox.showerror(message="No hay suficientes productos", title="Error", parent=marco)
     else:
         registro = "INSERT INTO facturas (NOMBRECLIENTE, NOMBRE, CANTIDAD, PRECIO)" \
@@ -76,9 +76,10 @@ def grabar():
             productos_tree.insert('', i, text='', values=(ro[0], ro[1], ro[2], ro[3]))
             i = i + 1
 
-        codigoquery = 'SELECT CODIGO FROM facturas WHERE NOMBRE = ?'
+        codigoquery = 'SELECT CODIGO FROM facturas WHERE NOMBRE = ? ORDER BY CODIGO DESC'
         cursor.execute(codigoquery, [nombreProd])
-        cod = cursor.fetchall()[0]
+        cod = cursor.fetchall()
+        print(cod)
         f = open("Factura.txt", 'w')
         f.write(f'{nombreClient}\n{cod[0]} {nombreProd} {cantidad} {precio}\u20ac')
         f.close()
