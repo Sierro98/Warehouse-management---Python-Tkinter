@@ -50,36 +50,43 @@ def grabar():
     except sqlite3.OperationalError as error:
         print("Error al abrir:", error)
 
-    registro = "INSERT INTO facturas (NOMBRECLIENTE, NOMBRE, CANTIDAD, PRECIO)" \
-               " VALUES(?, ?, ?, ?)"
-    cursor.execute(registro, [nombreClient, nombreProd, cantidad, precio])
-
     getCantidad = 'SELECT CANTIDAD FROM productos WHERE NOMBRE = ?'
     cursor.execute(getCantidad, [nombreProd])
     cant = cursor.fetchall()[0]
     cantidadActual: int = cant[0] - int(cantidad)
 
-    update = 'UPDATE productos SET CANTIDAD = ? WHERE NOMBRE = ?'
-    cursor.execute(update, [cantidadActual, nombreProd])
+    if cant[0] < cantidadActual:
+        dato = tk.messagebox.showerror(message="No hay suficientes productos", title="Error", parent=marco)
+    else:
+        registro = "INSERT INTO facturas (NOMBRECLIENTE, NOMBRE, CANTIDAD, PRECIO)" \
+                   " VALUES(?, ?, ?, ?)"
+        cursor.execute(registro, [nombreClient, nombreProd, cantidad, precio])
 
-    productos_tree.delete(*productos_tree.get_children())
-    cursor.execute('SELECT NOMBREPROVEEDOR, NOMBRE, CANTIDAD, DESCRIPCION FROM productos')
-    i = 0
-    for ro in cursor:
-        productos_tree.insert('', i, text='', values=(ro[0], ro[1], ro[2], ro[3]))
-        i = i + 1
+        cursor.execute(getCantidad, [nombreProd])
+        cant = cursor.fetchall()[0]
+        cantidadActual: int = cant[0] - int(cantidad)
 
-    codigoquery = 'SELECT CODIGO FROM facturas WHERE NOMBRE = ?'
-    cursor.execute(codigoquery, [nombreProd])
-    cod = cursor.fetchall()[0]
-    f = open("Factura.txt", 'w')
-    f.write(f'{nombreClient}\n{cod[0]} {nombreProd} {cantidad} {precio}\u20ac')
-    f.close()
-    ejecutar(cod[0])
+        update = 'UPDATE productos SET CANTIDAD = ? WHERE NOMBRE = ?'
+        cursor.execute(update, [cantidadActual, nombreProd])
 
-    connection.commit()
-    mostrar()
-    continuar()
+        productos_tree.delete(*productos_tree.get_children())
+        cursor.execute('SELECT NOMBREPROVEEDOR, NOMBRE, CANTIDAD, DESCRIPCION FROM productos')
+        i = 0
+        for ro in cursor:
+            productos_tree.insert('', i, text='', values=(ro[0], ro[1], ro[2], ro[3]))
+            i = i + 1
+
+        codigoquery = 'SELECT CODIGO FROM facturas WHERE NOMBRE = ?'
+        cursor.execute(codigoquery, [nombreProd])
+        cod = cursor.fetchall()[0]
+        f = open("Factura.txt", 'w')
+        f.write(f'{nombreClient}\n{cod[0]} {nombreProd} {cantidad} {precio}\u20ac')
+        f.close()
+        ejecutar(cod[0])
+
+        connection.commit()
+        mostrar()
+        continuar()
 
 def mostrar():
     try:

@@ -28,6 +28,7 @@ def onSelected(event):
         nombreProducto.insert(0, nom)
         cantProducto.insert(0, cant)
         descripcionProducto.insert("1.0", desc)
+        nombreProveedor.insert(0, nomProv)
 
 def limpiarCampos():
     nombreProveedor.delete(0, 'end')
@@ -250,7 +251,7 @@ def aniadirProducto():
     btnlgrabar.config(text="GRABAR", width=10, height=2, anchor="center",
                       activebackground="blue", relief="raised",
                       borderwidth=5, font=("Cambria", 20), command=lambda: grabar())
-    btnlgrabar.grid(row=8, column=1, sticky="w", padx=100, pady=10)
+    btnlgrabar.place(x=350, y=675)
 
     global btnModificar
     btnlgrabar = Button(marco)

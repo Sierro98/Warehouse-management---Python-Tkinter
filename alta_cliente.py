@@ -35,6 +35,7 @@ def onSelected(event):
         nombreCliente.insert(0, nombre)
         telefono.insert(0, telef)
         descripcion.insert("1.0", des)
+        ciudad.insert(0, ciu)
 
 def limpiarCampos():
     nombreCliente.delete(0, 'end')

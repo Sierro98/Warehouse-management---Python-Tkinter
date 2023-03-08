@@ -29,6 +29,8 @@ def onSelected(event):
         direccionProveedor.insert(0, dir)
         telefonoProveedor.insert(0, tel)
         observacionesProveedor.insert("1.0", obs)
+        ciudadProveedor.insert(0, ciu)
+        mercanciasProveedor.insert(0, merc)
 
 
 def limpiarCampos():
