@@ -4,6 +4,7 @@ from tkinter import ttk
 from tkinter.messagebox import *
 from tkinter import Tk, Button
 from creafac import ejecutar
+import re
 
 def actualizarComboCliente(event):
     clienteIndex = nombreCliente.current()
@@ -19,6 +20,7 @@ def actualizarPrecioProducto(event):
 
 
 def grabar():
+    regex = re.compile("[0-9]")
     connection = sqlite3.connect('almacen.db')
     cursor = connection.cursor()
 
@@ -50,44 +52,50 @@ def grabar():
     except sqlite3.OperationalError as error:
         print("Error al abrir:", error)
 
-    getCantidad = 'SELECT CANTIDAD FROM productos WHERE NOMBRE = ?'
-    cursor.execute(getCantidad, [nombreProd])
-    cant = cursor.fetchall()[0]
-    cantidadActual: int = cant[0] - int(cantidad)
+    if regex.match(cantidad) and regex.match(precio):
+        if int(cantidad) <= 0 or int(precio) <= 0:
+            dato = tk.messagebox.showerror(message="Introduzca un numero valido", title="Error", parent=marco)
+        else:
+            getCantidad = 'SELECT CANTIDAD FROM productos WHERE NOMBRE = ?'
+            cursor.execute(getCantidad, [nombreProd])
+            cant = cursor.fetchall()[0]
+            cantidadActual: int = cant[0] - int(cantidad)
 
-    if cant[0] < int(cantidad):
-        dato = tk.messagebox.showerror(message="No hay suficientes productos", title="Error", parent=marco)
+            if cant[0] < int(cantidad):
+                dato = tk.messagebox.showerror(message="No hay suficientes productos", title="Error", parent=marco)
+            else:
+                registro = "INSERT INTO facturas (NOMBRECLIENTE, NOMBRE, CANTIDAD, PRECIO)" \
+                           " VALUES(?, ?, ?, ?)"
+                cursor.execute(registro, [nombreClient, nombreProd, cantidad, precio])
+
+                cursor.execute(getCantidad, [nombreProd])
+                cant = cursor.fetchall()[0]
+                cantidadActual: int = cant[0] - int(cantidad)
+
+                update = 'UPDATE productos SET CANTIDAD = ? WHERE NOMBRE = ?'
+                cursor.execute(update, [cantidadActual, nombreProd])
+
+                productos_tree.delete(*productos_tree.get_children())
+                cursor.execute('SELECT NOMBREPROVEEDOR, NOMBRE, CANTIDAD, DESCRIPCION FROM productos')
+                i = 0
+                for ro in cursor:
+                    productos_tree.insert('', i, text='', values=(ro[0], ro[1], ro[2], ro[3]))
+                    i = i + 1
+
+                codigoquery = 'SELECT CODIGO FROM facturas WHERE NOMBRE = ? ORDER BY CODIGO DESC'
+                cursor.execute(codigoquery, [nombreProd])
+                cod = cursor.fetchall()
+                f = open("Factura.txt", 'w')
+                f.write(f'{nombreClient}\n{cod[0]} {nombreProd} {cantidad} {precio}\u20ac')
+                f.close()
+                ejecutar(cod[0])
+
+                connection.commit()
+                tk.messagebox.showinfo(message="Factura emitida e impresa", title="Info", parent=marco)
+                mostrar()
+                continuar()
     else:
-        registro = "INSERT INTO facturas (NOMBRECLIENTE, NOMBRE, CANTIDAD, PRECIO)" \
-                   " VALUES(?, ?, ?, ?)"
-        cursor.execute(registro, [nombreClient, nombreProd, cantidad, precio])
-
-        cursor.execute(getCantidad, [nombreProd])
-        cant = cursor.fetchall()[0]
-        cantidadActual: int = cant[0] - int(cantidad)
-
-        update = 'UPDATE productos SET CANTIDAD = ? WHERE NOMBRE = ?'
-        cursor.execute(update, [cantidadActual, nombreProd])
-
-        productos_tree.delete(*productos_tree.get_children())
-        cursor.execute('SELECT NOMBREPROVEEDOR, NOMBRE, CANTIDAD, DESCRIPCION FROM productos')
-        i = 0
-        for ro in cursor:
-            productos_tree.insert('', i, text='', values=(ro[0], ro[1], ro[2], ro[3]))
-            i = i + 1
-
-        codigoquery = 'SELECT CODIGO FROM facturas WHERE NOMBRE = ? ORDER BY CODIGO DESC'
-        cursor.execute(codigoquery, [nombreProd])
-        cod = cursor.fetchall()
-        print(cod)
-        f = open("Factura.txt", 'w')
-        f.write(f'{nombreClient}\n{cod[0]} {nombreProd} {cantidad} {precio}\u20ac')
-        f.close()
-        ejecutar(cod[0])
-
-        connection.commit()
-        mostrar()
-        continuar()
+        dato = tk.messagebox.showerror(message="Introduzca un numero valido", title="Error", parent=marco)
 
 def mostrar():
     try:

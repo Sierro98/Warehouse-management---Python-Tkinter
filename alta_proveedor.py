@@ -3,6 +3,7 @@ import tkinter as tk
 from tkinter import ttk
 from tkinter.messagebox import *
 from tkinter import Tk, Button
+import re
 
 def actualizarTabla():
     connection = sqlite3.connect('almacen.db')
@@ -40,6 +41,7 @@ def limpiarCampos():
     telefonoProveedor.delete(0, 'end')
 
 def modificar():
+    regex = re.compile("^[0-9]{9}$")
     connection = sqlite3.connect('almacen.db')
     cursor = connection.cursor()
 
@@ -70,14 +72,18 @@ def modificar():
     elif ciudadIndex == 6:
         ciudad = "Mostoles"
 
-    update = 'UPDATE proveedores SET NOMBRE = ?, DIRECCION = ?, CIUDAD = ?, TELEFONO = ?, MERCANCIAS = ?, OBSERVACIONES = ? ' \
-             'WHERE CODIGO = ?'
+    if regex.match(telefono):
+        update = 'UPDATE proveedores SET NOMBRE = ?, DIRECCION = ?, CIUDAD = ?, TELEFONO = ?, MERCANCIAS = ?, OBSERVACIONES = ? ' \
+                 'WHERE CODIGO = ?'
 
-    cursor.execute(update, [nombre, direccion, ciudad, telefono, mercancia, observaciones, codigoSelected])
-    connection.commit()
-    actualizarTabla()
-    cursor.close()
-    connection.close()
+        cursor.execute(update, [nombre, direccion, ciudad, telefono, mercancia, observaciones, codigoSelected])
+        connection.commit()
+        actualizarTabla()
+        cursor.close()
+        connection.close()
+    else:
+        dato = tk.messagebox.showerror(message="Introduzca un telefono valido", title="Error", parent=marco)
+
 def borrar():
     connection = sqlite3.connect('almacen.db')
     cursor = connection.cursor()
@@ -111,6 +117,7 @@ def actualizarObservaciones(event):
 
 
 def grabar():
+    regex = re.compile("^[0-9]{9}$")
     connection = sqlite3.connect('almacen.db')
     cursor = connection.cursor()
 
@@ -157,19 +164,22 @@ def grabar():
     except sqlite3.OperationalError as error:
         print("Error al abrir:", error)
 
-    registro = "INSERT INTO proveedores (NOMBRE, DIRECCION, CIUDAD, TELEFONO, MERCANCIAS, OBSERVACIONES)" \
-               " VALUES(?, ?, ?, ?, ?, ?)"
-    cursor.execute(registro, [nombre, direccion, ciudad, telefono, mercancia, observaciones])
+    if regex.match(telefono):
+        registro = "INSERT INTO proveedores (NOMBRE, DIRECCION, CIUDAD, TELEFONO, MERCANCIAS, OBSERVACIONES)" \
+                   " VALUES(?, ?, ?, ?, ?, ?)"
+        cursor.execute(registro, [nombre, direccion, ciudad, telefono, mercancia, observaciones])
 
-    proveedores_tree.delete(*proveedores_tree.get_children())
-    cursor.execute('SELECT CODIGO, NOMBRE, DIRECCION, CIUDAD, TELEFONO, MERCANCIAS, OBSERVACIONES FROM proveedores')
-    i = 0
-    for ro in cursor:
-        proveedores_tree.insert('', i, text='', values=(ro[0], ro[1], ro[2], ro[3], ro[4], ro[5], ro[6]))
-        i = i + 1
-    connection.commit()
-    mostrar()
-    continuar()
+        proveedores_tree.delete(*proveedores_tree.get_children())
+        cursor.execute('SELECT CODIGO, NOMBRE, DIRECCION, CIUDAD, TELEFONO, MERCANCIAS, OBSERVACIONES FROM proveedores')
+        i = 0
+        for ro in cursor:
+            proveedores_tree.insert('', i, text='', values=(ro[0], ro[1], ro[2], ro[3], ro[4], ro[5], ro[6]))
+            i = i + 1
+        connection.commit()
+        mostrar()
+        continuar()
+    else:
+        dato = tk.messagebox.showerror(message="Introduzca un telefono valido", title="Error", parent=marco)
 
 
 def mostrar():

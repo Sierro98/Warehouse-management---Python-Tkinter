@@ -3,7 +3,7 @@ import tkinter as tk
 from tkinter import ttk
 from tkinter.messagebox import *
 from tkinter import Tk, Button
-
+import re
 
 
 def actualizarTabla():
@@ -38,6 +38,7 @@ def limpiarCampos():
     cantProducto.delete(0, 'end')
 
 def modificar():
+    regex = re.compile("[0-9]")
     connection = sqlite3.connect('almacen.db')
     cursor = connection.cursor()
 
@@ -45,15 +46,17 @@ def modificar():
     nombre = nombreProducto.get()
     cantidad = cantProducto.get()
     descripcion = descripcionProducto.get("1.0", "end-1c")
+    if regex.match(cantidad):
+        update = 'UPDATE productos SET NOMBREPROVEEDOR = ?, NOMBRE = ?, CANTIDAD = ?, DESCRIPCION = ? ' \
+                 'WHERE CODIGO = ?'
 
-    update = 'UPDATE productos SET NOMBREPROVEEDOR = ?, NOMBRE = ?, CANTIDAD = ?, DESCRIPCION = ? ' \
-             'WHERE CODIGO = ?'
-
-    cursor.execute(update, [nombreProv, nombre, cantidad, descripcion, codigoSelected])
-    connection.commit()
-    actualizarTabla()
-    cursor.close()
-    connection.close()
+        cursor.execute(update, [nombreProv, nombre, cantidad, descripcion, codigoSelected])
+        connection.commit()
+        actualizarTabla()
+        cursor.close()
+        connection.close()
+    else:
+        dato = tk.messagebox.showerror(message="Introduzca un numero en la cantidad", title="Error", parent=marco)
 def borrar():
     connection = sqlite3.connect('almacen.db')
     cursor = connection.cursor()
@@ -80,6 +83,7 @@ def actualizarDescripcion(event):
     descripcion = descripcionProducto.get("1.0", "end-1c")
 
 def grabar():
+    regex = re.compile("[0-9]")
     connection = sqlite3.connect('almacen.db')
     cursor = connection.cursor()
 
@@ -106,14 +110,17 @@ def grabar():
     except sqlite3.OperationalError as error:
         print("Error al abrir:", error)
 
-    registro = "INSERT INTO productos (NOMBREPROVEEDOR, NOMBRE, CANTIDAD, DESCRIPCION)" \
-               " VALUES(?, ?, ?, ?)"
-    cursor.execute(registro, [nombreProv, nombre, cantidad, descripcion])
+    if regex.match(cantidad):
+        registro = "INSERT INTO productos (NOMBREPROVEEDOR, NOMBRE, CANTIDAD, DESCRIPCION)" \
+                   " VALUES(?, ?, ?, ?)"
+        cursor.execute(registro, [nombreProv, nombre, cantidad, descripcion])
 
-    connection.commit()
-    actualizarTabla()
-    mostrar()
-    continuar()
+        connection.commit()
+        actualizarTabla()
+        mostrar()
+        continuar()
+    else:
+        dato = tk.messagebox.showerror(message="Introduzca una cantidad valida", title="Error", parent=marco)
 
 def mostrar():
     try:

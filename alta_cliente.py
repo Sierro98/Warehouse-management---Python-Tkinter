@@ -10,6 +10,7 @@ from tkinter import ttk, W
 import sqlite3
 from tkinter.messagebox import *
 from tkinter import Tk, Button
+import re
 
 def actualizarTabla():
     connection = sqlite3.connect('almacen.db')
@@ -44,6 +45,7 @@ def limpiarCampos():
     ciudad.delete(0, 'end')
 
 def modificar():
+    regex = re.compile("^[0-9]{9}$")
     connection = sqlite3.connect('almacen.db')
     cursor = connection.cursor()
 
@@ -66,13 +68,16 @@ def modificar():
     elif index == 6:
         ciudadCliente = "Mostoles"
 
-    update = 'UPDATE clientes SET NOMBRE = ?, CIUDAD = ?, TELEFONO = ?, DESCRIPCION = ? WHERE CODIGO = ?'
+    if regex.match(telefonoCliente):
+        update = 'UPDATE clientes SET NOMBRE = ?, CIUDAD = ?, TELEFONO = ?, DESCRIPCION = ? WHERE CODIGO = ?'
 
-    cursor.execute(update, [nombre, ciudadCliente, telefonoCliente, descrip, codigoSelected])
-    connection.commit()
-    actualizarTabla()
-    cursor.close()
-    connection.close()
+        cursor.execute(update, [nombre, ciudadCliente, telefonoCliente, descrip, codigoSelected])
+        connection.commit()
+        actualizarTabla()
+        cursor.close()
+        connection.close()
+    else:
+        dato = tk.messagebox.showerror(message="Introduzca un telefono valido", title="Error", parent=marco)
 def borrar():
     connection = sqlite3.connect('almacen.db')
     cursor = connection.cursor()
@@ -101,6 +106,7 @@ def actualizardesc(event):
 
 
 def grabar():
+    regex = re.compile("^[0-9]{9}$")
     connection = sqlite3.connect('almacen.db')
     cursor = connection.cursor()
 
@@ -123,34 +129,36 @@ def grabar():
     elif index == 6:
         ciudadCliente = "Mostoles"
 
-    try:
-        cursor.execute('''
-                        CREATE TABLE IF NOT EXISTS clientes (
-                            CODIGO INTEGER PRIMARY KEY AUTOINCREMENT,
-                            NOMBRE VARCHAR(40) NOT NULL,
-                            CIUDAD VARCHAR(40) NOT NULL,
-                            TELEFONO INT NOT NULL,
-                            DESCRIPCION TEXT NOT NULL)
-                   
-                        ''')
-        print("Tabla creada correctamente")
-    except sqlite3.OperationalError as error:
-        print("Error al abrir:", error)
+    if regex.match(telefonoCliente):
+        try:
+            cursor.execute('''
+                            CREATE TABLE IF NOT EXISTS clientes (
+                                CODIGO INTEGER PRIMARY KEY AUTOINCREMENT,
+                                NOMBRE VARCHAR(40) NOT NULL,
+                                CIUDAD VARCHAR(40) NOT NULL,
+                                TELEFONO INT NOT NULL,
+                                DESCRIPCION TEXT NOT NULL)
+                       
+                            ''')
+            print("Tabla creada correctamente")
+        except sqlite3.OperationalError as error:
+            print("Error al abrir:", error)
 
-    registro = "INSERT INTO clientes (NOMBRE, CIUDAD, TELEFONO, DESCRIPCION) VALUES(?, ?, ?, ?)"
-    cursor.execute(registro, [nombre, ciudadCliente, telefonoCliente, descrip])
+        registro = "INSERT INTO clientes (NOMBRE, CIUDAD, TELEFONO, DESCRIPCION) VALUES(?, ?, ?, ?)"
+        cursor.execute(registro, [nombre, ciudadCliente, telefonoCliente, descrip])
 
-    clientes_tree.delete(*clientes_tree.get_children())
-    cursor.execute('SELECT CODIGO, NOMBRE, CIUDAD, TELEFONO, DESCRIPCION FROM clientes')
-    i = 0
-    for ro in cursor:
-        clientes_tree.insert('', i, text='', values=(ro[0], ro[1], ro[2], ro[3], ro[4]))
-        i = i + 1
+        clientes_tree.delete(*clientes_tree.get_children())
+        cursor.execute('SELECT CODIGO, NOMBRE, CIUDAD, TELEFONO, DESCRIPCION FROM clientes')
+        i = 0
+        for ro in cursor:
+            clientes_tree.insert('', i, text='', values=(ro[0], ro[1], ro[2], ro[3], ro[4]))
+            i = i + 1
 
-    connection.commit()
-    mostrar()
-    continuar()
-
+        connection.commit()
+        mostrar()
+        continuar()
+    else:
+        dato = tk.messagebox.showerror(message="Introduzca un telefono valido", title="Error", parent=marco)
 
 def mostrar():
     try:

@@ -2,6 +2,29 @@ import sqlite3
 import tkinter as tk
 from tkinter import ttk
 from tkinter import Tk, Button
+from creafac import ejecutar
+
+def onSelected(event):
+    for selItem in facturas_tree.selection():
+        item = facturas_tree.item(selItem)
+        cod, nomClie, nom, cant, prec = item["values"][0:5]
+        global codigoSelected
+        global nombreCliente
+        global nombre
+        global cantidad
+        global precio
+        codigoSelected = int(cod)
+        nombreCliente = nomClie
+        nombre = nom
+        cantidad = int(cant)
+        precio = int(prec)
+
+def emitirFactura():
+    f = open("Factura.txt", 'w')
+    f.write(f'{nombreCliente}\n{codigoSelected} {nombre} {cantidad} {precio}\u20ac')
+    f.close()
+    ejecutar(codigoSelected)
+    tk.messagebox.showinfo(message=f'Factura nº{codigoSelected} impresa', title="Info", parent=marco)
 
 
 def initFacturasEmitidas():
@@ -45,4 +68,12 @@ def initFacturasEmitidas():
         total = ro[3] * ro[4]
         facturas_tree.insert('', i, text='', values=(ro[0], ro[1], ro[2], ro[3], ro[4], total))
         i = i + 1
+    facturas_tree.bind("<<TreeviewSelect>>", onSelected)
     facturas_tree.place(x=370, y=150, height=400)
+
+    global btn_emitir_factura
+    btn_emitir_factura = Button(marco)
+    btn_emitir_factura.config(text="IMPRIMIR FACTURA", width=20, height=1, anchor="center",
+                      activebackground="blue", relief="raised",
+                      borderwidth=5, font=("Cambria", 20), command=lambda: emitirFactura())
+    btn_emitir_factura.place(x=590, y=620)
