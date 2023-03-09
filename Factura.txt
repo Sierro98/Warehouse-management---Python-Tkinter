@@ -1,5 +1,5 @@
 -Cliente:  TorreznoCo
--Producto:  "msi motherboard 420"
--Precio:  150€ 
+-Producto:  "Stylus"
+-Precio:  20€ 
 -Cantidad:  1 unidad/es
--Total:   150€
+-Total:   20€
