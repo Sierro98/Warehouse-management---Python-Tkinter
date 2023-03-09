@@ -3,6 +3,8 @@ import tkinter as tk
 from tkinter import ttk
 from tkinter import Tk, Button
 from creafac import ejecutar
+import subprocess
+
 
 def onSelected(event):
     for selItem in facturas_tree.selection():
@@ -21,10 +23,13 @@ def onSelected(event):
 
 def emitirFactura():
     f = open("Factura.txt", 'w')
-    f.write(f'{nombreCliente}\n{codigoSelected} {nombre} {cantidad} {precio}\u20ac')
+    f.write(f'Cliente:  {nombreCliente}  con id de compra:  {codigoSelected}\n'
+            f'Compró: "{nombre}" a {precio}\u20ac  x  {cantidad}  =  {precio * int(cantidad)}\u20ac')
     f.close()
     ejecutar(codigoSelected)
     tk.messagebox.showinfo(message=f'Factura nº{codigoSelected} impresa', title="Info", parent=marco)
+    path = f'Factura{codigoSelected}.pdf'
+    subprocess.Popen([path], shell=True)
 
 
 def initFacturasEmitidas():

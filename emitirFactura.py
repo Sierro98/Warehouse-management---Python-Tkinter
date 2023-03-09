@@ -84,9 +84,9 @@ def grabar():
 
                 codigoquery = 'SELECT CODIGO FROM facturas WHERE NOMBRE = ? ORDER BY CODIGO DESC'
                 cursor.execute(codigoquery, [nombreProd])
-                cod = cursor.fetchall()
+                cod = cursor.fetchone()
                 f = open("Factura.txt", 'w')
-                f.write(f'{nombreClient}\n{cod[0]} {nombreProd} {cantidad} {precio}\u20ac')
+                f.write(f'{nombreClient}\nid: {cod[0]}, Producto: {nombreProd} a {precio} x {cantidad} = {precio*int(cantidad)}\u20ac')
                 f.close()
                 ejecutar(cod[0])
 

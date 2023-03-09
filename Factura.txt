@@ -1,2 +1,2 @@
-Bar de Daniel Hater
-2 Stylus 6 4€
+Cliente:  TorreznoCo  con id de compra:  27
+Compró: "Pantalla carro " a 100€  x  1  =  100€

@@ -8,53 +8,45 @@ from reportlab.pdfgen import canvas
 from reportlab.lib.utils import ImageReader
 
 
+global idFact
 def pintarlogo():
     img = ImageReader("almacenIcono.png")
-    c.drawImage(img, 50, h - 90, width=80, height=80)
+    c.drawImage(img, 50, h - 120, width=80, height=80)
 
 
-def pintarcabecera():
-    x = 50
-    y = h - 100
-    c.line(x, y, x + 500, y)
-    c.drawString(280, h - 50, "FACTURA")
-    c.line(x, y+100, x + 500, y+100)
-
-
-def leerf(f):
+def leerf():
     with open('Factura.txt') as f:
         for linea in f:
             lista.append(linea)
             
 
 def ejecutar(idFactura):
+    idFact = idFactura
     global lista
     lista = []
     z = 0
     global h
     global w
     w, h = A4
-    margsup = 210
-    entrecols = 15
 
     global c
     c = canvas.Canvas(f'Factura{idFactura}.pdf')
 
     pintarlogo()
-    pintarcabecera()
-    nomarch = "Factura.txt"
-    leerf(nomarch)
-    c.setFont("Helvetica", 10)
-    for dato in lista:
-        xlist = [10, 200]    #comienzo y final de cada lineo horizontal de la tabla
-        ylist = [h - margsup - i*entrecols for i in range(len(lista) + 1)]
-        c.grid(xlist, ylist)
+
+    x = 50
+    c.setFont("Helvetica", 30)
+    c.drawString(210, h - 100, f'FACTURA nº{idFact}')
+    c.line(x, h - 130, x + 500, h - 130)
+
+    leerf()
+    c.setFont("Helvetica", 20)
 
     for dato in lista:
         dato = dato.rstrip()
-        c.drawString(12, 620 - z, dato)
-        z+=15
-
+        c.drawString(45, 620 - z, dato)
+        z+=50
+    c.drawString(150, 50, 'Factura generada por Alejandro Sierro Galán')
 
     c.showPage()
     c.save()
