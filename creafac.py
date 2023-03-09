@@ -36,7 +36,7 @@ def ejecutar(idFactura):
 
     x = 50
     c.setFont("Helvetica", 30)
-    c.drawString(210, h - 100, f'FACTURA nº{idFact}')
+    c.drawString(210, h - 100, f'FACTURA Nº{idFact}')
     c.line(x, h - 130, x + 500, h - 130)
 
     leerf()
@@ -44,7 +44,7 @@ def ejecutar(idFactura):
 
     for dato in lista:
         dato = dato.rstrip()
-        c.drawString(45, 620 - z, dato)
+        c.drawString(50, 620 - z, dato)
         z+=50
     c.drawString(150, 50, 'Factura generada por Alejandro Sierro Galán')
 

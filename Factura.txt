@@ -1,2 +1,5 @@
-Cliente:  TorreznoCo  con id de compra:  27
-Compró: "Pantalla carro " a 100€  x  1  =  100€
+-Cliente:  TorreznoCo
+-Producto:  "msi motherboard 420"
+-Precio:  150€ 
+-Cantidad:  1 unidad/es
+-Total:   150€

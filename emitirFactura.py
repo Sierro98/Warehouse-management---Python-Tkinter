@@ -5,6 +5,7 @@ from tkinter.messagebox import *
 from tkinter import Tk, Button
 from creafac import ejecutar
 import re
+import subprocess
 
 def actualizarComboCliente(event):
     clienteIndex = nombreCliente.current()
@@ -86,7 +87,9 @@ def grabar():
                 cursor.execute(codigoquery, [nombreProd])
                 cod = cursor.fetchone()
                 f = open("Factura.txt", 'w')
-                f.write(f'{nombreClient}\nid: {cod[0]}, Producto: {nombreProd} a {precio} x {cantidad} = {precio*int(cantidad)}\u20ac')
+                f.write(f'-Cliente:  {nombreClient}\n'
+                        f'-Producto:  "{nombreProd}"\n-Precio:  {precio}\u20ac \n-Cantidad:  {cantidad} unidad/es'
+                        f'\n-Total:   {precio * int(cantidad)}\u20ac')
                 f.close()
                 ejecutar(cod[0])
 
@@ -94,6 +97,8 @@ def grabar():
                 tk.messagebox.showinfo(message="Factura emitida e impresa", title="Info", parent=marco)
                 mostrar()
                 continuar()
+                path = f'Factura{cod[0]}.pdf'
+                subprocess.Popen([path], shell=True)
     else:
         dato = tk.messagebox.showerror(message="Introduzca un numero valido", title="Error", parent=marco)
 

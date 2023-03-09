@@ -23,8 +23,8 @@ def onSelected(event):
 
 def emitirFactura():
     f = open("Factura.txt", 'w')
-    f.write(f'Cliente:  {nombreCliente}  con id de compra:  {codigoSelected}\n'
-            f'Compró: "{nombre}" a {precio}\u20ac  x  {cantidad}  =  {precio * int(cantidad)}\u20ac')
+    f.write(f'-Cliente:  {nombreCliente}\n'
+            f'-Producto:  "{nombre}"\n-Precio:  {precio}\u20ac \n-Cantidad:  {cantidad} unidad/es\n-Total:   {precio * int(cantidad)}\u20ac')
     f.close()
     ejecutar(codigoSelected)
     tk.messagebox.showinfo(message=f'Factura nº{codigoSelected} impresa', title="Info", parent=marco)
